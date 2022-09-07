@@ -1,0 +1,101 @@
+---
+- name: duplicity | check vars are defined
+  assert:
+    that:
+      - duplicity_archive_dir is defined
+      - duplicity_s3_path is defined
+      - duplicity_s3_passphrase is defined
+      - duplicity_s3_access_key is defined
+      - duplicity_s3_secret_key is defined
+  tags: ['backup_duplicity']
+
+- name: duplicity | install packages
+  apt:
+    name: 
+      - duplicity
+    state: present
+  tags: ['backup_duplicity']
+
+- name: duplicity | check for dedicated GPG key
+  shell: |
+    gpg --list-options show-only-fpr-mbox --list-secret-keys -a "{{ duplicity_gpg_real_name }}" | awk '{print $1}'
+  register: duplicity_get_key
+  tags: ['backup_duplicity']
+
+- set_fact:
+    duplicity_gpg_key: "{{ duplicity_get_key.stdout }}"
+  when: duplicity_get_key.stdout != ''
+  tags: ['backup_duplicity']
+
+- name: duplicity | generate dedicated GPG key
+  shell: |
+    gpg --batch --gen-key <<EOF
+    %echo Generating a OpenPGP key
+    %no-protection
+    Key-Type: eddsa
+    Key-Curve: Ed25519
+    Key-Usage: cert
+    Subkey-Type: ecdh
+    Subkey-Curve: Curve25519
+    Subkey-Usage: encrypt
+    Name-Real: "{{ duplicity_gpg_real_name }}"
+    Name-Email: "{{ duplicity_gpg_email }}"
+    Expire-Date: 0
+    %commit
+    EOF
+  when: duplicity_gpg_key is undefined
+  tags: ['backup_duplicity']
+
+
+- name: duplicity | create configuration directory
+  file:
+    path: /etc/duplicity
+    state: directory
+    mode: '0755'
+  tags: ['backup_duplicity']
+
+- name: duplicity | copy configuration file
+  template:
+    src: duplicity.cnf.j2
+    dest: /etc/duplicity/duplicity.cnf
+    owner: root
+    group: root
+    mode: 0600
+  tags: ['backup_duplicity']
+
+- name: duplicity | copy exclude.list
+  template:
+    src: exclude.list.j2
+    dest: /etc/duplicity/exclude.list
+    owner: root
+    group: root
+    mode: 0644
+  tags: ['backup_duplicity']
+
+- name: duplicity | create backup cronjob
+  cron:
+    name: duplicity backup
+    minute: "{{ duplicity_cron_backup_minute }}"
+    hour: "{{ duplicity_cron_backup_hour }}"
+    day: "{{ duplicity_cron_backup_day }}"
+    month: "{{ duplicity_cron_backup_month }}"
+    weekday: "{{ duplicity_cron_backup_weekday }}"
+    user: "{{ duplicity_cron_backup_user }}"
+    job: "source /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_s3_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }}"
+  when: 
+    - duplicity_gpg_key is defined
+  tags: ['backup_duplicity']
+
+- name: duplicity | create cleanup cronjob
+  cron:
+    name: duplicity cleanup
+    minute: "{{ duplicity_cron_backup_minute }}"
+    hour: "{{ duplicity_cron_backup_hour }}"
+    day: "{{ duplicity_cron_backup_day }}"
+    month: "{{ duplicity_cron_backup_month }}"
+    weekday: "{{ duplicity_cron_backup_weekday }}"
+    user: "{{ duplicity_cron_backup_user }}"
+    job: "source /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --force --s3-use-new-style -v 4 remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_s3_path }}\""
+  when: 
+    - duplicity_gpg_key is defined
+  tags: ['backup_duplicity']

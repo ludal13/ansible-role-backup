@@ -1,0 +1,18 @@
+---
+# duplicity
+duplicity_archive_dir: '/duplicity'
+
+duplicity_gpg_real_name: 'duplicity'
+duplicity_gpg_email: 'backup@localhost'
+
+duplicity_cron_backup_minute: '0'
+duplicity_cron_backup_hour: '3'
+duplicity_cron_backup_day: '*'
+duplicity_cron_backup_month: '*'
+duplicity_cron_backup_weekday: '*'
+duplicity_cron_backup_user: 'root'
+
+duplicity_full_older_than: '6'
+duplicity_remove_older_than: '8'
+
+duplicity_exclude_filelist: '/etc/duplicity/exclude.list'

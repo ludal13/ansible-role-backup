@@ -1,0 +1,12 @@
+---
+- name: requirements
+  include_tasks: requirements.yml
+
+- name: services
+  vars:
+   service: "{{ item }}"
+  include_tasks: "{{ item }}.yml"
+  tags:
+    - backup_duplicity
+  with_items:
+    - "{{ backup_services }}"
