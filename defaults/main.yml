@@ -1,9 +1,10 @@
 ---
 # duplicity
+duplicity_oneforall_key: False
 duplicity_archive_dir: '/duplicity'
 
 duplicity_gpg_real_name: 'duplicity'
-duplicity_gpg_email: 'backup@localhost'
+duplicity_gpg_email: 'team-lca@alterway.fr'
 
 duplicity_cron_backup_minute: '0'
 duplicity_cron_backup_hour: '3'
@@ -16,3 +17,27 @@ duplicity_full_older_than: '6'
 duplicity_remove_older_than: '8'
 
 duplicity_exclude_filelist: '/etc/duplicity/exclude.list'
+duplicity_list:
+  - /var/lib/bareos
+  - /dev
+  - /media
+  - /mnt
+  - /proc
+  - /sys
+  - /tmp
+  - /var/cache
+  - /var/tmp
+  - /var/lib/mongodb
+  - /var/lib/mysql
+  - /var/lib/postgresql
+  - /var/lib/redis
+  - /var/lib/solr
+  - /var/lib/elasticsearch
+  - /var/spool/postfix
+  - /var/www
+  - /VMs
+  - /.journal
+  - /.fsck
+  - /zpve
+
+duplicity_list_custom:
