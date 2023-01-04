@@ -6,8 +6,8 @@ duplicity_archive_dir: '/duplicity'
 duplicity_gpg_real_name: 'duplicity'
 duplicity_gpg_email: 'team-lca@alterway.fr'
 
-duplicity_cron_backup_minute: '0'
-duplicity_cron_backup_hour: '3'
+duplicity_cron_backup_minute: 0
+duplicity_cron_backup_hour: 3
 duplicity_cron_backup_day: '*'
 duplicity_cron_backup_month: '*'
 duplicity_cron_backup_weekday: '*'
@@ -34,7 +34,6 @@ duplicity_list:
   - /var/lib/solr
   - /var/lib/elasticsearch
   - /var/spool/postfix
-  - /var/www
   - /VMs
   - /.journal
   - /.fsck
