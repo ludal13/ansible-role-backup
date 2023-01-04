@@ -1,0 +1,8 @@
+---
+- name: backup | add command aliases
+  template:
+    src: profile-backup.sh.j2
+    dest: /etc/profile.d/backup.sh
+    owner: root
+    group: root
+    mode: 0640

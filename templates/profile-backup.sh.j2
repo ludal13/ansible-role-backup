@@ -1,0 +1,3 @@
+{% if 'duplicity' in backup_services %}
+alias duplicityls='source /etc/duplicity/duplicity.cnf && duplicity collection-status "{{ duplicity_s3_path }}"'
+{% endif %}

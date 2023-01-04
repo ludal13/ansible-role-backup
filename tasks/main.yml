@@ -10,3 +10,8 @@
     - backup_duplicity
   with_items:
     - "{{ backup_services }}"
+
+- name: tools
+  include_tasks: "tools.yml"
+  tags:
+    - backup_duplicity
