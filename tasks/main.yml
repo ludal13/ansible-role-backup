@@ -7,6 +7,6 @@
    service: "{{ item }}"
   include_tasks: "{{ item }}.yml"
   tags:
-    - backup
+    - backup_duplicity
   with_items:
     - "{{ backup_services }}"

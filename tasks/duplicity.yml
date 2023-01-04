@@ -7,14 +7,15 @@
       - duplicity_s3_passphrase is defined
       - duplicity_s3_access_key is defined
       - duplicity_s3_secret_key is defined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | install packages
   apt:
     name: 
       - duplicity
+      - python3-boto
     state: present
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | check for dedicated GPG key standalone
   shell: |
@@ -22,7 +23,7 @@
   register: duplicity_get_key
   when:
     - duplicity_oneforall_key == False
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | check for dedicated GPG key infra
   shell: |
@@ -31,14 +32,14 @@
   delegate_to: localhost
   when:
     - duplicity_oneforall_key == True
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - set_fact:
     duplicity_gpg_key: "{{ duplicity_get_key.stdout }}"
   when:
     - duplicity_oneforall_key == False
     - duplicity_get_key.stdout != ''
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - set_fact:
     duplicity_gpg_key: "{{ duplicity_get_key.stdout }}"
@@ -46,7 +47,7 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_get_key.stdout != ''
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | generate dedicated GPG key standalone
   shell: |
@@ -67,7 +68,7 @@
   when:
     - duplicity_oneforall_key == False
     - duplicity_gpg_key is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | generate dedicated GPG key infra
   shell: |
@@ -89,7 +90,7 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | check for dedicated GPG key infra on remote
   shell: |
@@ -97,14 +98,14 @@
   register: duplicity_get_key_remote
   when:
     - duplicity_oneforall_key == True
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - set_fact:
     duplicity_gpg_key_remote: "{{ duplicity_get_key_remote.stdout }}"
   when:
     - duplicity_oneforall_key == True
     - duplicity_get_key_remote.stdout != ''
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | export public key
   shell: |
@@ -113,7 +114,7 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | export private key
   shell: |
@@ -122,7 +123,7 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | copy keys to the server
   copy:
@@ -134,7 +135,7 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | import keys to the server
   shell: |
@@ -145,14 +146,14 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | import ownertrust
   shell: "/usr/bin/echo '{{ duplicity_gpg_key }}:6:' |/usr/bin/gpg --import-ownertrust"
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | delete exported keys
   ansible.builtin.file:
@@ -165,7 +166,7 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | delete exported keys on remote
   ansible.builtin.file:
@@ -177,14 +178,14 @@
   when:
     - duplicity_oneforall_key == True
     - duplicity_gpg_key_remote is undefined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | create configuration directory
   file:
     path: /etc/duplicity
     state: directory
     mode: '0755'
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | copy configuration file
   template:
@@ -193,7 +194,7 @@
     owner: root
     group: root
     mode: 0600
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | copy exclude.list
   template:
@@ -202,7 +203,7 @@
     owner: root
     group: root
     mode: 0644
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | create backup cronjob
   cron:
@@ -216,7 +217,7 @@
     job: "source /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_s3_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }}"
   when: 
     - duplicity_gpg_key is defined
-  tags: ['backup']
+  tags: ['backup_duplicity']
 
 - name: duplicity | create cleanup cronjob
   cron:
@@ -230,4 +231,4 @@
     job: "source /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --force --s3-use-new-style -v 4 remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_s3_path }}\""
   when: 
     - duplicity_gpg_key is defined
-  tags: ['backup']
+  tags: ['backup_duplicity']
