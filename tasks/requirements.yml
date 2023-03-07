@@ -3,3 +3,8 @@
   apt:
     update_cache: yes
     cache_valid_time: 86400
+
+- name: Install package for s3 backend
+  ansible.builtin.pip:
+    name: python-boto
+  tags: ['backup_duplicity']
