@@ -8,7 +8,7 @@
       - duplicity_s3_access_key is defined
       - duplicity_s3_secret_key is defined
   when:
-    - duplicity_backend == s3
+    - duplicity_backend == 's3'
   tags: ['backup_duplicity']
 
 - name: duplicity | check vars are defined
@@ -17,7 +17,7 @@
       - duplicity_archive_dir is defined
       - duplicity_azure_path is defined
   when:
-    - duplicity_backend == azure
+    - duplicity_backend == 'azure'
   tags: ['backup_duplicity']
 
 - name: duplicity | install packages
@@ -228,7 +228,7 @@
     job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_s3_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }}"
   when: 
     - duplicity_gpg_key is defined
-    - duplicity_backend == s3
+    - duplicity_backend == 's3'
   tags: ['backup_duplicity']
 
 - name: duplicity | create cleanup cronjob
@@ -243,7 +243,7 @@
     job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --force --s3-use-new-style -v 4 remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_s3_path }}\""
   when: 
     - duplicity_gpg_key is defined
-    - duplicity_backend == s3
+    - duplicity_backend == 's3'
   tags: ['backup_duplicity']
 
 - name: duplicity | create backup cronjob
@@ -258,7 +258,7 @@
     job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_azure_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }}"
   when: 
     - duplicity_gpg_key is defined
-    - duplicity_backend == azure
+    - duplicity_backend == 'azure'
   tags: ['backup_duplicity']
 
 - name: duplicity | create cleanup cronjob
@@ -273,5 +273,5 @@
     job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --force remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_azure_path }}\""
   when: 
     - duplicity_gpg_key is defined
-    - duplicity_backend == azure
+    - duplicity_backend == 'azure'
   tags: ['backup_duplicity']
