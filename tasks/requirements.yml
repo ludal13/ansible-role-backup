@@ -9,3 +9,8 @@
     name: python3-boto
     state: present
   tags: ['backup_duplicity']
+
+- name: Install package for s3 backend
+  ansible.builtin.pip:
+    name: boto
+  tags: ['backup_duplicity']
