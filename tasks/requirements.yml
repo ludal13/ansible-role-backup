@@ -5,6 +5,7 @@
     cache_valid_time: 86400
 
 - name: Install package for s3 backend
-  ansible.builtin.pip:
-    name: python-boto
+  apt:
+    name: python3-boto
+    state: present
   tags: ['backup_duplicity']
