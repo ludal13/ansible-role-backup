@@ -14,3 +14,9 @@
   ansible.builtin.pip:
     name: boto
   tags: ['backup_duplicity']
+
+- name: Install package for azure backend
+  ansible.builtin.pip:
+    name: azure
+  when: duplicity_backend == 'azure'
+  tags: ['backup_duplicity']
