@@ -1,0 +1,8 @@
+# Ansible generated
+# Check if backup of the day is present
+currenttime=$(date +%H:%M)
+if [[ "$currenttime" > "09:00" ]] || [[ "$currenttime" < "23:59" ]]; then
+     source /etc/duplicity/duplicity.cnf && duplicity collection-status --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} "{{ duplicity_azure_path }}" |grep 'Full\|Incremental' |grep -i "$(date +"%a %b %d")" |wc -l                                                                                                                                                                                                                
+else
+     echo "1"
+fi

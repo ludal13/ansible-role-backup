@@ -6,3 +6,11 @@
     owner: root
     group: root
     mode: 0640
+
+- name: backup | add last backup check script
+  template:
+    src: check_duplicity.sh.j2
+    dest: /usr/local/bin/check_duplicity.sh
+    owner: root
+    group: root
+    mode: 0750
