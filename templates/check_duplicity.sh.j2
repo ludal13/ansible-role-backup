@@ -1,12 +1,18 @@
 # Ansible generated
 # Check if backup of the day is present
 currenttime=$(date +%H:%M)
+day_of_month=$(date +"%a %b %d" |awk '{print $3}')
 if [[ "$currenttime" > "09:00" ]] || [[ "$currenttime" < "23:59" ]]; then
-{% if 's3' in duplicity_backend -%}
-    source /etc/duplicity/duplicity.cnf && duplicity collection-status --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} "{{ duplicity_s3_path }}" |grep 'Full\|Incremental' |grep -i "$(date +"%a %b %d")" |wc -l
-{% elif 'azure' in duplicity_backend %}
-    source /etc/duplicity/duplicity.cnf && duplicity collection-status --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} "{{ duplicity_azure_path }}" |grep 'Full\|Incremental' |grep -i "$(date +"%a %b %d")" |wc -l
-{% endif %}
+    if [[ $day_of_month = 0* ]]; then
+        timetocheck=$(date +"%a %b %d" |sed 's/0/ /')
+    else
+	timetocheck=$(date +"%a %b %d")
+    fi
+    {% if 's3' in duplicity_backend -%}
+    source /etc/duplicity/duplicity.cnf && duplicity collection-status --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} "{{ duplicity_s3_path }}" |grep 'Full\|Incremental' |grep -i "$timetocheck" |wc -l
+    {% elif 'azure' in duplicity_backend %}
+    source /etc/duplicity/duplicity.cnf && duplicity collection-status --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} "{{ duplicity_azure_path }}" |grep 'Full\|Incremental' |grep -i "$timetocheck" |wc -l
+    {% endif %}
 else
      echo "1"
 fi
