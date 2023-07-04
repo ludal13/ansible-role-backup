@@ -225,7 +225,7 @@
     month: "{{ duplicity_cron_backup_month }}"
     weekday: "{{ duplicity_cron_backup_weekday }}"
     user: "{{ duplicity_cron_backup_user }}"
-    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_s3_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }}"
+    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_s3_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }} >/dev/null"
   when: 
     - duplicity_gpg_key is defined
     - '"s3" in duplicity_backend'
@@ -240,7 +240,7 @@
     month: "{{ duplicity_cron_backup_month }}"
     weekday: "{{ duplicity_cron_backup_weekday }}"
     user: "{{ duplicity_cron_backup_user }}"
-    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --force --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_s3_path }}\""
+    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --force --s3-use-new-style -v 4 --archive-dir={{ duplicity_archive_dir }} remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_s3_path }}\" >/dev/null"
   when: 
     - duplicity_gpg_key is defined
     - '"s3" in duplicity_backend'
@@ -255,7 +255,7 @@
     month: "{{ duplicity_cron_backup_month }}"
     weekday: "{{ duplicity_cron_backup_weekday }}"
     user: "{{ duplicity_cron_backup_user }}"
-    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_azure_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }}"
+    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} --full-if-older-than {{ duplicity_full_older_than }}D / \"{{ duplicity_azure_path }}\" --exclude-filelist {{ duplicity_exclude_filelist }} >/dev/null"
   when: 
     - duplicity_gpg_key is defined
     - '"azure" in duplicity_backend'
@@ -270,7 +270,7 @@
     month: "{{ duplicity_cron_backup_month }}"
     weekday: "{{ duplicity_cron_backup_weekday }}"
     user: "{{ duplicity_cron_backup_user }}"
-    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} --force remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_azure_path }}\""
+    job: ". /etc/duplicity/duplicity.cnf && duplicity --encrypt-key {{ duplicity_gpg_key }} --name {{ duplicity_backup_name }} --archive-dir={{ duplicity_archive_dir }} --force remove-older-than {{ duplicity_remove_older_than }}D \"{{ duplicity_azure_path }}\" >/dev/null"
   when: 
     - duplicity_gpg_key is defined
     - '"azure" in duplicity_backend'
