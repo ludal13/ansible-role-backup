@@ -24,6 +24,7 @@ duplicity_list:
   - /media
   - /mnt
   - /proc
+  - /run/docker
   - /sys
   - /tmp
   - /var/cache
